@@ -1,15 +1,16 @@
 # Deal with permession deined probelm 
 
-## The peoblem 
-Proudaction tead decide to block the new members fo access the FASTQ files in proudaction directory 
+## The peroblem
 
-## Sloution 
+Proudaction team decide to block the new members from access the FASTQ files in proudaction directory 
+
+## Sloutions
 
 ### zUMIs Pipline 
 
 **Step 1** Establish the directory of the project
 
-Since I'm using zUMIs to work with smart-seq covid project, I need to copy files and scripts in from "/scratch_isilon/groups/singlecell/shared/projects/SCMARATOCOV"
+Since I'm using zUMIs to work with smart-seq covid project, I need to copy files and scripts from "/scratch_isilon/groups/singlecell/shared/projects/SCMARATOCOV"
 
 This script create the working directory of subproject with all of what you need to work with zUMIs 
 
@@ -43,6 +44,7 @@ cd ..
 chmod g+rwX $subproject_folder -R
 chmod -R 777 "$subproject_folder"/fastq_dir
 ```
+
 **RUN THIS SCRIPT**
 
 You should be in "/scratch_isilon/groups/singlecell/shared/projects/SCMARATOCOV"
@@ -74,6 +76,40 @@ The person will request to run this script
 - You should create the target directory where is the files will copy to
 - You should give all of group member permission to write in this directory
 
+**copy_fastqs.sh** script to copy the file
+
+You can find it in /scratch_isilon/groups/singlecell/shared/projects/copy_files/copy_fastqs.sh
+
+```{}
+#!/bin/bash
+
+# Step 1: Execute the 1-lims.sh script and save the output to lims_info.txt
+./scripts/1-lims.sh "$1"
+
+# Step 2: Run the 2-write_fastq_paths.py script and generate the fastq_paths.tab file
+python scripts/2-write_fastq_paths.py --info_file lims_${1}.txt --subproject "$1"
+
+# Step 3: Specify the target directory where you want to copy the files
+[ -w "$2" ] && echo "You have permission to target directory" || echo "You do not have permission to target directory"
+target_directory="$2"
+
+# Step 4: Check if fastq_paths.tab file exists and copy the files
+if [ -f "./fastq_paths.tab" ]; then
+    while IFS=$'\t' read -r -a fields; do
+        # Extract the path from the second column (index 1)
+        path=${fields[1]}
+
+        # Copy the file to the target directory
+        cp "$path" "$target_directory"
+    done < "./fastq_paths.tab"
+else
+    echo "fastq_paths.tab file not found."
+fi
+
+chmod -R 440 "$2"
+chmod -R g+rwx .
+```
+
 Let's Test? :partying_face::boom:
 
 ```{}
@@ -99,7 +135,11 @@ cd subproject
 mkdir data
 echo subprojects > data/subproject_list.txt
 ```
+
 **STEP 1** 
+
+Very important, you need to spacify the "-lims_path /scratch/groups/singlecell/software/limsq"
+
 ```{r}
 module load Python/2.7.18-GCCcore-11.2.0
 python 1-lims_info_file_downloader.py -input_subproject_id_list_file ../data/subproject_list.txt -output_dir ../data/ -lims_path /scratch/groups/singlecell/software/limsq
@@ -112,9 +152,10 @@ module unload Python/2.7.18-GCCcore-11.2.0
 module load Python/3.8.6-GCCcore-10.2.0
 python3 2-lims_info_to_metadata.py -input_lims_info_file ../data/all_subproject_raw_lims_info.tsv -output_metadata_file ../data/metadata.tsv
 ```
+
 **STEP 3** (Some one will do it for you)
 
-Here we will as a help from some one to copy the files of fastq to "/scratch_isilon/groups/singlecell/shared/projects/copy_files/fastq_dir" this directory I will use it instead of proudaction, it will contain all of FASTQ related to cellranger for all of the projects and I will have permession to them.
+Here we will ask for a help from some one to copy the files of fastq to "/scratch_isilon/groups/singlecell/shared/projects/copy_files/fastq_dir" this directory I will use it instead of proudaction directory (since we don't have access to it), it will contain all of FASTQ related to cellranger for all of the projects and I will have permession to them.
 
 ```{}
 cd /scratch_isilon/groups/singlecell/shared/projects/copy_files
@@ -122,6 +163,8 @@ cd /scratch_isilon/groups/singlecell/shared/projects/copy_files
 ```
 
 **STEP 4**
+
+Very Important to specify -fastq_dir /scratch_isilon/groups/singlecell/shared/projects/SCMARATOCOV/SCMARATOCOV_02/fastq_dir where is you copied the fastq files to.
 
 ```{}
 module load Python/3.8.6-GCCcore-10.2.0
