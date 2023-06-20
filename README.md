@@ -124,6 +124,29 @@ You can use it like this:
 ```{}
 ./calculate_size.sh SCMARATOCOV_02
 ```
+**STEP 3**
+Since zUMIs requires the cell identity to be encoded in one of the fastq files, already demultiplexed files can be incompatible eg. in Smart-seq data.
+
+zUMIs provide a way to recombine fastq files and generate an arbitrary index sequence. All you need to provide is the path to the folder containing the individual fastq files that should be combined. Fastq file names are expected in the format of bcl2fastq (XYZ_R1_001.fastq.gz) or SRA's fastq-dump (XYZ_1.fastq.gz). Fastq files are assumed to be gzipped.
+
+```{}
+sbatch scripts/4-zumis_remultiplex_preprocessing_cluster.cmd 
+```
+
+**STEP 4**
+```{}
+sbatch --dependency=afterok: "job_ID_of_first_job" scripts/5-zumis_main_cluster.cmd
+```
+**STEP 5**
+
+Generate seurat object and run some QC
+
+```{}
+R -e "rmarkdown::render('generate_seurate_from_zUMIs.Rmd', output_file='generate_seurate_from_zUMIs_SCMARATOCOV_02.html',
+                        params = list(subproject = 'SCMARATOCOV_02'))"
+R -e "rmarkdown::render('generate_seurate_from_zUMIs.Rmd', output_file='generate_seurate_from_zUMIs_SCMARATOCOV_01.html',
+                        params = list(subproject = 'SCMARATOCOV_01'))"
+```
 
 ### Cell-Ranger Pipline 
 
