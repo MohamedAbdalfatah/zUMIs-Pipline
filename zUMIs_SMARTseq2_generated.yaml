@@ -1,0 +1,46 @@
+project: SCMARATOCOV_03
+sequence_files:
+  file1:
+    name: /scratch_isilon/groups/singlecell/shared/projects/SCMARATOCOV/SCMARATOCOV_03/fastq_dir/reads_for_zUMIs.R1.fastq.gz
+    base_definition: cDNA(1-100)
+  file2:
+    name: /scratch_isilon/groups/singlecell/shared/projects/SCMARATOCOV/SCMARATOCOV_03/fastq_dir/reads_for_zUMIs.R2.fastq.gz
+    base_definition: cDNA(1-100)
+  file3:
+    name: /scratch_isilon/groups/singlecell/shared/projects/SCMARATOCOV/SCMARATOCOV_03/fastq_dir/reads_for_zUMIs.index.fastq.gz
+    base_definition: BC(1-8)
+reference:
+  STAR_index: /scratch/devel/wblevins/references/STAR_references/Homo_sapiens.GRCh38/
+  GTF_file: /scratch/devel/wblevins/references/reference_sources/Homo_sapiens.GRCh38.93.filtered.gtf
+  additional_STAR_params: ''
+  additional_files: ~
+out_dir: /scratch_isilon/groups/singlecell/shared/projects/SCMARATOCOV/SCMARATOCOV_03/outs
+num_threads: 20
+mem_limit: 0
+filter_cutoffs:
+  BC_filter:
+    num_bases: 1
+    phred: 20
+  UMI_filter:
+    num_bases: 1
+    phred: 20
+barcodes:
+  barcode_num: ~
+  barcode_file: /scratch_isilon/groups/singlecell/shared/projects/SCMARATOCOV/SCMARATOCOV_03/fastq_dir/reads_for_zUMIs.expected_barcodes.txt
+  automatic: no
+  BarcodeBinning: 0
+  nReadsperCell: 100
+counting_opts:
+  introns: yes
+  downsampling: '0'
+  strand: 0
+  Ham_Dist: 0
+  velocyto: no
+  primaryHit: yes
+  twoPass: yes
+make_stats: yes
+which_Stage: Filtering
+Rscript_exec: Rscript
+STAR_exec: STAR
+pigz_exec: pigz
+samtools_exec: samtools
