@@ -57,7 +57,7 @@ PATH_TO_ZUMIS="/scratch_isilon/groups/singlecell/shared/software/zUMIs"
 PATH_TO_PIGZ="/software/crgadm/software/pigz/2.6-GCCcore-10.3.0/bin/pigz"
 NUM_THREADS=10
 
-PATH_TO_DEMULTIPLEXED_FASTQS="/scratch_isilon/groups/singlecell/shared/projects/SCMARATOCOV/SCMARATOCOV_03/fastq_dir/"
+PATH_TO_DEMULTIPLEXED_FASTQS="/scratch_isilon/groups/singlecell/shared/projects/SCMARATOCOV/SCMARATOCOV_02/fastq_dir/"
 
 Rscript $PATH_TO_ZUMIS/misc/merge_demultiplexed_fastq.R \
 --dir $PATH_TO_DEMULTIPLEXED_FASTQS \
@@ -67,8 +67,13 @@ Rscript $PATH_TO_ZUMIS/misc/merge_demultiplexed_fastq.R \
 
 ### How to run
 
+since the path in this script is **"/scratch_isilon/groups/singlecell/shared/projects/SCMARATOCOV/SCMARATOCOV_02/fastq_dir/"** and we are working in **"/scratch_isilon/groups/singlecell/shared/projects/SCMARATOCOV/SCMARATOCOV_03/fastq_dir/"** we going to change the path to our working directory
+
 ```{}
 sed -i 's|SCMARATOCOV_02|'"SCMARATOCOV_03"'|g' scripts/4-zumis_remultiplex_preprocessing_cluster.cmd 
+```
+Run the script after its modfication 
+```{}
 sbatch scripts/4-zumis_remultiplex_preprocessing_cluster.cmd 
 ```
 
