@@ -24,6 +24,13 @@ conda activate sc_py
 python scripts/3-copy_lims_files.py lims_info.txt fastq_dir
 ```
 
+# Skip Step 2 and 3 (Recommended)
+
+In this step we can combine step 2 and Three and do both in one step like this
+```{}
+./scripts/copy_fastqs.sh SCMARATOCOV_03  /scratch_isilon/groups/singlecell/shared/projects/SCMARATOCOV/SCMARATOCOV_03/fastq_dir/
+```
+
 ## **Step 4** demultiplexed FASTQs
 
 Since zUMIs requires the cell identity to be encoded in one of the fastq files, already demultiplexed files can be incompatible eg. in Smart-seq data.
