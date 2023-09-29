@@ -10,13 +10,15 @@ mkdir SCMARATOCOV_03/fastq_dir
 cd SCMARATOCOV_03
 ```
 
-## **Step 2**  Get Lims info
+## **Step 2**  Get Lims info (Canceled)
 
 ```{}
 ./scripts/1-lims.sh SCMARATOCOV_03
 ```
 
-## **Step 3** Copy FASTQs
+## **Step 3** Copy FASTQs (Canceled)
+
+We canceled this step becouse it copy the file with the sample name, not with it is original name
 
 ```{}
 source ~/.bashrc
