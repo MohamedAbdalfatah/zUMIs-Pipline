@@ -33,7 +33,52 @@ In this step we can combine step 2 and Three and do both in one step like this
 ./scripts/copy_fastqs.sh SCMARATOCOV_03  /scratch_isilon/groups/singlecell/shared/projects/SCMARATOCOV/SCMARATOCOV_03/fastq_dir/
 ```
 
-## **Step 4** demultiplexed FASTQs
+## **Step 4** Combined FASTQs
+
+Each cell have 4 to 8 FASTQs, we want to combine those file to end two (R1, R2) FASTQs for each cell 
+
+### The script 
+```{}
+#!/bin/bash
+
+# Check if input and output paths were provided as arguments
+if [ "$#" -ne 2 ]; then
+  echo "Usage: $0 <input_directory> <output_directory>"
+  exit 1
+fi
+
+# Set input and output paths from the provided arguments
+input_dir="$1"
+output_dir="$2"
+
+# Loop through all FASTQ files in the input directory
+for file in "$input_dir"/*.fastq.gz; do
+  if [[ "$file" =~ ([A-Z0-9]+)_([0-9]+)_IDT-DUI-NXT-([0-9]+)_([12]).fastq.gz ]]; then
+    prefix="${BASH_REMATCH[1]}"
+    idt_dui_nxt="${BASH_REMATCH[3]}"
+    read_number="${BASH_REMATCH[4]}"
+
+    # Combine read 1 (_1)
+    if [ "$read_number" == "1" ]; then
+      cat "$file" >> "$output_dir/${prefix}_IDT-DUI-NXT-${idt_dui_nxt}_1.fastq.gz"
+    fi
+
+    # Combine read 2 (_2)
+    if [ "$read_number" == "2" ]; then
+      cat "$file" >> "$output_dir/${prefix}_IDT-DUI-NXT-${idt_dui_nxt}_2.fastq.gz"
+    fi
+  fi
+done
+```
+
+### How to run
+
+```{}
+mkdir fastq_dir/combined_fastqs
+./combinFastqs.sh /scratch_isilon/groups/singlecell/shared/projects/SCMARATOCOV/SCMARATOCOV_02/fastq_dir /scratch_isilon/groups/singlecell/shared/projects/SCMARATOCOV/SCMARATOCOV_02/fastq_dir/combined_fastqs
+
+```
+## **Step 5** demultiplexed FASTQs
 
 Since zUMIs requires the cell identity to be encoded in one of the fastq files, already demultiplexed files can be incompatible eg. in Smart-seq data.
 
@@ -82,7 +127,7 @@ Run the script after its modfication
 sbatch scripts/4-zumis_remultiplex_preprocessing_cluster.cmd 
 ```
 
-## **STEP 5** Run ZUMIs
+## **STEP 6** Run ZUMIs
 
 ### The script
 
@@ -115,7 +160,7 @@ sed -i 's|SCMARATOCOV_02|'"SCMARATOCOV_03"'|g' zUMIs_SMARTseq2_generated.yaml
 sbatch --dependency=afterok: "job_ID_of_first_job" scripts/5-zumis_main_cluster.cmd
 ```
 
-**STEP 6**
+**STEP 7**
 
 Generate seurat object and run some QC
 
